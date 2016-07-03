@@ -14,5 +14,5 @@ The file mp4-layout.txt contains the mp4 file format specification used.
 En route to completion there will be several programs or scripts written:
 - A Delphi console application for pinpointing the positions of certain chunks within mp4 files in order to verify my understanding of the mp4 file format and the validity of the parsing scheme used.
 - A Python script for HTTP retrieval, to STDOUT,  of the information needed to properly identify (if any) the first mp3 audio track in a remote mp4 file and to report the location within said mp4 file of the tables specifying the locations and sizes of all data blocks in said audio track.
-- A Python script for HTTP retrieval, in playing order, of the locations and sizes of the data blocks of the first mp3 audio track within a remote mp4 file given, via STDIN, the URL and the location within said file of the location and size tables for said audio track.
+- A Python script for HTTP retrieval, to STDOUT, in playing order, of the locations and sizes of the data blocks of the first mp3 audio track within a remote mp4 file given, via STDIN, the URL and the location within said file of the location and size tables for said audio track.
 - A Python script for HTTP retrieval, to STDOUT, of data blocks of a remote mp4 file given, via STDIN, the URL of the file and the locations and sizes of the blocks.
