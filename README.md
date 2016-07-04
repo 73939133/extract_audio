@@ -12,9 +12,11 @@ In order to consider the task completed, the following features should be implem
 The file mp4-layout.txt contains the mp4 file format specification used.
 
 En route to completion there will be several programs or scripts written:
-- A Delphi console application for pinpointing the positions of certain chunks within mp4 files in order to verify my understanding of the mp4 file format and the validity of the parsing scheme used.
-- A Python script for HTTP retrieval, to STDOUT,  of the information needed to properly identify (if any) the first mp3 audio track in a remote mp4 file and to report the location within said mp4 file of the tables specifying the locations and sizes of all data blocks in said audio track.
-- A Python script for HTTP retrieval, to STDOUT, in playing order, of the locations and sizes of the data blocks of the first mp3 audio track within a remote mp4 file given, via STDIN, the URL and the location within said file of the location and size tables for said audio track.
+- mp4scan.dpr - A Delphi console application for pinpointing the offsets of certain data boxes within an mp4 file in order to verify my understanding of the mp4 file format and the validity of the parsing scheme use.
+- find_track.py - A Python script for HTTP retrieval, to STDOUT, given the URL, of the offset of the data box containing data chunk information of the the first mp3 audio track (if any) in a remote mp4 file.
+ and to report the offset within said mp4 file of the tables specifying the locations and sizes of all data blocks in said audio track.
+- find_record.py - A Python script for HTTP retrieval, to STDOUT, given teh URL and the offset of the data boxe within the mp4 file specifying the offsets and sizes of the data chunks of said audio track.
+- A Python script for HTTP retrieval, to STDOUT, in playing order, of the locations and sizes of the data blocks of the first mp3 audio track within a remote mp4 file.
 - A Python script for HTTP retrieval, to STDOUT, of data blocks of a remote mp4 file given, via STDIN, the URL of the file and the locations and sizes of the blocks.
 
 Constraints:
