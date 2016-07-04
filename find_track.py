@@ -11,11 +11,11 @@ def Error(s):
 	sys.stderr.write(s+'\n')
 	exit()
 
-# return 32 bit integer at offset n in buffer b
+# returns 32 bit integer at offset n in buffer b
 def ReadUInt32(b,n):
 	return ord(b[n+3])+(ord(b[n+2])<<8)+(ord(b[n+1])<<16)+(ord(b[n])<<24)
 
-#returns tag at offset n in buffer b
+# returns tag at offset n in buffer b
 def ReadTag(b,n):
 	return b[n:n+4]
 
@@ -54,7 +54,7 @@ def DecodeESDS(b,n):
 if len(sys.argv) < 2:
 	Syntax()
 url = urlparse(sys.argv[1])
-if url.scheme == '' or url.netloc == '':
+if len(url.scheme) == 0 or len(url.netloc) == 0:
         Syntax()
 
 # retrieves size bytes at offset from server
@@ -131,8 +131,8 @@ while moovbase < moovsize:
 									break
 	moovbase += size
 
-if moovbase < moovsize:
-	print sys.argv[1]
-	print str(stblbase)
-else:
+if moovbase >= moovsize:
 	Error('No mp3 track found')
+
+print sys.argv[1]
+print str(stblbase)
