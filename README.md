@@ -49,14 +49,14 @@ stco - contains a list of offsets within the file of each chunk in this track.
 stsc - contains a list of sequence numbers and chunk sizes. This is a little more complicated and directly related to the actual implemntation, as follows:
 
 The stsc data box contains the following:
-4 bytes = long unsigned offset
-4 bytes = ASCII text string
-4 bytes = version/flags
-4 bytes = long unsigned number_of_blocks
-n records
- - 4 bytes = long unsigned first/next
- - 4 bytes = long unsigned number_of_blocks
- - 4 bytes = long unsigned description number
+- 4 bytes = long unsigned offset
+- 4 bytes = ASCII text string
+- 4 bytes = version/flags
+- 4 bytes = long unsigned number_of_blocks
+- n records
+   - 4 bytes = long unsigned first/next
+   - 4 bytes = long unsigned number_of_blocks
+   - 4 bytes = long unsigned description number
 
 The first/next field specifies the sequence number of the first chunk to use this record.
 The number of frames field specifies the number of frames per chunk.
