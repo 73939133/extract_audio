@@ -16,12 +16,11 @@ En route to completion there will be several programs or scripts written:
 - find_track.py - A Python script for HTTP retrieval, to STDOUT, of the offset of the data box containing data chunk information of the the first mp3 audio track (if any) in a remote mp4 file, given the URL.
  and to report the offset within said mp4 file of the tables specifying the locations and sizes of all data blocks in said audio track.
 - find_record.py - A Python script for HTTP retrieval, to STDOUT, of the offsets and sizes of the data chunks of said audio track, given the URL and the offset of the stbl data box within the mp4 file.
-- A Python script for HTTP retrieval, to STDOUT, in playing order, of the locations and sizes of the data blocks of the first mp3 audio track within a remote mp4 file.
-- A Python script for HTTP retrieval, to STDOUT, of data blocks of a remote mp4 file given, via STDIN, the URL of the file and the locations and sizes of the blocks.
+- find_chunks.py - A Python script for HTTP retrieval, to STDOUT, in playing order, of the locations and sizes of the data blocks of the first mp3 audio track within a remote mp4 file.
 
 Constraints:
 This is just an exercise and I have chosen to not support files larger than 4 GiB, mostly because of the bandwidth needed to retrieve files for testing.
-Because this exercise specification requires playback to begin without downloadint the entire file, HTTP servers without support for byte ranges are not supported. 
+Because this exercise specification requires playback to begin without downloading the entire file, HTTP servers without support for byte ranges are not supported. 
 
 The solution:
 The mp4 file format contains a number of data boxes. The format varies between them, but they all start with a 32-bit offset and 4 bytes ASCII type string.
@@ -84,5 +83,3 @@ This will make sure that we don't read beyond the available records in the list.
 
 The offsets (from stco) and the sizes in bytes, calculated by multiplying the block size (from stsz) by the chunk size (from stsc), can now be fed into the block retriever.
 All that is left for the block retriever to do is to request the blocks at said offset with said size.
-
-More to follow...
