@@ -44,9 +44,43 @@ If no tracks are found containing mp3 audio, the script is terminated with an er
 
 The next step is to retrieve the relevant audio track.
 Using the offset of the stbl box provided by the parsing is now used to parse the stbl box for three boxes:
-stsc - contains a list of serial numbers and chunk sizes. The serial number is that of the first audio chunk to use this chunk and the chunk size is the number of block in this chunk. The first record contains the chunk size for audio chunk 1 and only serial numbers for chunks that differ in size from the previous ones are specified.
-stsz - contains the standard block size and, if that size is 0, a list of block sizes.
+stsz - contains the standard block size and the total number of blocks. If the size is 0, a complete list of block sizes follow.
 stco - contains a list of offsets within the file of each chunk in this track.
+stsc - contains a list of sequence numbers and chunk sizes. This is a little more complicated and directly related to the actual implemntation, as follows:
+
+The stsc data box contains the following:
+4 bytes = long unsigned offset
+4 bytes = ASCII text string
+4 bytes = version/flags
+4 bytes = long unsigned number_of_blocks
+n records
+ - 4 bytes = long unsigned first/next
+ - 4 bytes = long unsigned number_of_blocks
+ - 4 bytes = long unsigned description number
+
+The first/next field specifies the sequence number of the first chunk to use this record.
+The number of frames field specifies the number of frames per chunk.
+The description number is not used.
+For exmple, in an stsc data box containing three records:
+Record 1 = [ 1 2 1 ]
+Record 2 = [ 4 5 1 ]
+Record 3 = [ 7 6 1 ]
+
+This is to be interpreted as follows:
+Chunk 1 is 2 blocks long (according to record 1)
+Chunk 2 is 2 blocks long (same as previous chunk)
+Chunk 3 is 2 blocks long (same as previous chunk)
+Chunk 4 is 5 blocks long (according to record 2)
+Chunk 5 is 5 blocks long (same as previous chunk)
+Chunk 6 is 5 blocks long (same as previous chunk)
+Chunk 7 is 6 blocks long (according to record 3)
+Any remaining chunks after chunk 7 are all 6 blocks long (same as previous chunk) until the track ends.
+
+In order to implement this efficiently, the first/next field of the first record will not be read, because we already know this number is 1, and once the header is read, the records will be read from the number_of_blocks record
+The rest of the data box is then fetched in larger blocks. For T records in total and N records at a time, the total number of bytes fetched will be T * 12 - 4 (12 bytes per record, but skipping the first/next field of the first record) and, except the last fetch, 12 * N bytes will be fetched.
+The fetch counter is initially set to 12 * T - 4 and, as long as this number is larger than 12 * M, the fetch will request 12 * M bytes from the host and decrement the fetch counter by 12 * M.
+Because 4 is subtracted from 12 * T, when the fetch counter is initialized, the last fetch cannot be 12 * M, and therefore not 0 either. We're left then with 12 * K - 4 bytes, where 0 < K <= N and after this fetch 0xFFFFFFFF is appended to the buffer, as if we had one more record to go with the sequence number 0xFFFFFFFF.
+This will make sure that we don't read beyond the available records in the list. The data is in Network Byte Order, i.e. Big Endian, but that's not a problem because 0xFFFFFFFF does not change when converted between Big Endian and Little Endian.
 
 The offsets (from stco) and the sizes in bytes, calculated by multiplying the block size (from stsz) by the chunk size (from stsc), can now be fed into the block retriever.
 All that is left for the block retriever to do is to request the blocks at said offset with said size.
