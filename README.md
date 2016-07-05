@@ -53,7 +53,7 @@ The stsc data box contains the following:
 - 4 bytes = ASCII text string
 - 4 bytes = version/flags
 - 4 bytes = long unsigned number_of_blocks
-- n records
+- number_of_blocks records:
    - 4 bytes = long unsigned first/next
    - 4 bytes = long unsigned number_of_blocks
    - 4 bytes = long unsigned description number
