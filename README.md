@@ -18,6 +18,15 @@ En route to completion there will be several programs or scripts written:
 - find_record.py - A Python script for HTTP retrieval, to STDOUT, of the offsets and sizes of the data chunks of said audio track, given the URL and the offset of the stbl data box within the mp4 file.
 - find_chunks.py - A Python script for HTTP retrieval, to STDOUT, in playing order, of the locations and sizes of the data blocks of the first mp3 audio track within a remote mp4 file.
 
+Once all parts are properly debugged, the scripts will be merged into a single file, extract_audio.py, that combines all the steps of the individual script files mentioned above.
+
+How to run this?
+It's a python script and thus very simple. The first line reads "#!/usr/bin/env python", which should be enough to make things work under Linux, provided that the script is made executable using the command "chmod +x extract_audio.py".
+Then all you need to type is "./extract_audio http://...url... | mpg321 -" to play.
+The other way would be to type "python ./extract_audio http://...url... | mpg321 -", if you prefer... or if your script file isn't executable.
+
+The script is supposed to run uner later versions of Python 2. It's been developed on a Raspberry Pi running Raspbian Wheezy with Python version 2.7.3. As is, it won't work with Python 3, albeit only minor modifications will be required for that to change.
+
 Constraints:
 This is just an exercise and I have chosen to not support files larger than 4 GiB, mostly because of the bandwidth needed to retrieve files for testing.
 Because this exercise specification requires playback to begin without downloading the entire file, HTTP servers without support for byte ranges are not supported. 
