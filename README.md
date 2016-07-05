@@ -62,18 +62,18 @@ The first/next field specifies the sequence number of the first chunk to use thi
 The number of frames field specifies the number of frames per chunk.
 The description number is not used.
 For exmple, in an stsc data box containing three records:
-Record 1 = [ 1 2 1 ]
-Record 2 = [ 4 5 1 ]
-Record 3 = [ 7 6 1 ]
+- Record 1 = [ 1 2 1 ]
+- Record 2 = [ 4 5 1 ]
+- Record 3 = [ 7 6 1 ]
 
 This is to be interpreted as follows:
-Chunk 1 is 2 blocks long (according to record 1)
-Chunk 2 is 2 blocks long (same as previous chunk)
-Chunk 3 is 2 blocks long (same as previous chunk)
-Chunk 4 is 5 blocks long (according to record 2)
-Chunk 5 is 5 blocks long (same as previous chunk)
-Chunk 6 is 5 blocks long (same as previous chunk)
-Chunk 7 is 6 blocks long (according to record 3)
+- Chunk 1 is 2 blocks long (according to record 1)
+- Chunk 2 is 2 blocks long (same as previous chunk)
+- Chunk 3 is 2 blocks long (same as previous chunk)
+- Chunk 4 is 5 blocks long (according to record 2)
+- Chunk 5 is 5 blocks long (same as previous chunk)
+- Chunk 6 is 5 blocks long (same as previous chunk)
+- Chunk 7 is 6 blocks long (according to record 3)
 Any remaining chunks after chunk 7 are all 6 blocks long (same as previous chunk) until the track ends.
 
 In order to implement this efficiently, the first/next field of the first record will not be read, because we already know this number is 1, and once the header is read, the records will be read from the number_of_blocks record
