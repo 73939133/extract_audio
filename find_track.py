@@ -55,7 +55,7 @@ if len(sys.argv) < 2:
 	Syntax()
 url = urlparse(sys.argv[1])
 if len(url.scheme) == 0 or len(url.netloc) == 0:
-        Syntax()
+	Syntax()
 
 # retrieves size bytes at offset from server
 def Request(offset,size):
