@@ -25,7 +25,8 @@ It's a python script and thus very simple. The first line reads "#!/usr/bin/env 
 Then all you need to type is "./extract_audio http://...url... | mpg321 -" to play.
 The other way would be to type "python ./extract_audio http://...url... | mpg321 -", if you prefer... or if your script file isn't executable.
 
-The script is supposed to run uner later versions of Python 2. It's been developed on a Raspberry Pi running Raspbian Wheezy with Python version 2.7.3. As is, it won't work with Python 3, albeit only minor modifications will be required for that to change.
+The script is supposed to run under later versions of Python 2. It's been developed on a Raspberry Pi running Raspbian Wheezy with Python version 2.7.3. As is, it won't work with Python 3, albeit only minor modifications will be required for that to change.
+The reason for using the Raspberry Pi as the development platform is 
 
 Constraints:
 This is just an exercise and I have chosen to not support files larger than 4 GiB, mostly because of the bandwidth needed to retrieve files for testing.
@@ -33,22 +34,36 @@ Because this exercise specification requires playback to begin without downloadi
 
 The solution:
 The mp4 file format contains a number of data boxes. The format varies between them, but they all start with a 32-bit offset and 4 bytes ASCII type string.
-The offset indicates the offset from the beginning of the offset field to the next box and indicates the total size of the current box, including the offset and type fields.
-The rest of the box is the actual payload of the box and can contain other boxes. If, how many and what types depend on the type of box and can be found in the mp4 file format specification.
+The offset field specifies the offset to the next box from the beginning of the data box, i.e. the total size of the data box, including the offset and type fields.
+The rest of the box is the actual payload of the box and can contain other boxes. If it does and, if so, how many and what types, depend on the type of box and can be found in the mp4 file format specification.
 Parsing the file boils down to reading 8 bytes (offset and type) and either processing the box (if it's a box containing useful information) or using the offset to find the location of the next box, until end of file.
 The mdat box can be rather large and isn't required to be located after the moov box, making it impossible to successfully complete this exercise without byte range support from the HTTP server, hence the constraint specified above.
 
-On the root level there are several types of boxes but the only ones needed, except for the initial sanity check that the file starts with a box of type ftyp, are the moov and mdat boxes.
-Of those two, the former contains all the data needed to locate the data blocks needed for track retrieval and the latter contains the data blocks. The latter, however, won't be read directly, as the offsets to each data block specified in the moov box refers to the beginning of the file and not of the mdat box.
+On the root level there are several types of boxes but the only ones of interest, except for the initial sanity check that the file starts with a box of type ftyp, are the moov and mdat boxes.
+Of those two, the former contains all the data needed to locate the data blocks containing the the relevant track data blocks and the latter contains said data blocks. The latter, however, does not need to be located directly, as the offsets to each data block specified in the moov data box refers to the beginning of the file and not of the mdat box.
 
-In the moov box, there are several boxes of which only the trak boxes are needed.
-Each trak box is parsed for the necessary information only.
-Thus, the tkhd box is skipped because the tarck ID isn't relevant, as the task is to retrieve the first audio track containing mp3 audio, not a track with a specified track number.
-The mdia box is parsed, but the mdhd box is skipped, even though its hdlr box contains the tag soun if this is an audio track, because wether this is an mp3 track or not is specified in the minf box.
-The minf box is then parsed to locate the stbl box. The offset of this box is saved at this point, in case this track is identified as the correct one.
+In the moov box, there are several boxes of which only one type, the trak boxes, contains necessary information.
+Each trak box is then parsed, but only the mdia data box is necessary. The tkhd data box contains Track ID, but the task is to retrieve the first audio track containing mp3 audio, not a track with a specified track number. Thus, no need to process tkhd.
+The mdia box is parsed, but the mdhd box is skipped, even though its hdlr box contains the tag soun if this is an audio track, because wether this is an mp3 track or not is specified in the minf box. One could use mdhd and hdlr data boxes to discard video tracks at this point, but that would require parsing two data box paths under mdia rather than just one.
+Then, the minf box is parsed to locate the stbl box. The offset of this box is saved at this point, in case this track is identified as the correct one.
 In the stbl box, the stsd box is located and parsed. If the audio format description is not mp4a, then the parsing continues with the next trak box.
 If the tag mp4a is found, then parsing of the stsd box continues in order to locate the esds, in which object type ID is retrieved and either MPEG-2 ADTS (code 105) or MPEG-1 ADTS (code 107) is accepted and the saved stbl offset is processed further. Anything else will return to the parsing of the next trak box.
 If no tracks are found containing mp3 audio, the script is terminated with an error message.
+
+This is the hierarchy of interest. There are other data boxes in the structure, but only he relevant ones are shown:
+ftyp
+- moov
+   - trak
+      - mdia
+         - minf
+            - stbl
+               - stsd
+                  - mp4a tag
+                  - esds
+               - stsz
+               - stco
+               - stsc
+- mdat
 
 The next step is to retrieve the relevant audio track.
 Using the offset of the stbl box provided by the parsing is now used to parse the stbl box for three boxes:
