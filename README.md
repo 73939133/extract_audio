@@ -51,7 +51,7 @@ If the tag mp4a is found, then parsing of the stsd box continues in order to loc
 If no tracks are found containing mp3 audio, the script is terminated with an error message.
 
 This is the hierarchy of interest. There are other data boxes in the structure, but only he relevant ones are shown:
-ftyp
+- ftyp
 - moov
    - trak
       - mdia
