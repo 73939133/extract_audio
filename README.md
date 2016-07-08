@@ -25,8 +25,8 @@ It's a python script and thus very simple. The first line reads "#!/usr/bin/env 
 Then all you need to type is "./extract_audio http://...url... | mpg321 -" to play.
 The other way would be to type "python ./extract_audio http://...url... | mpg321 -", if you prefer... or if your script file isn't executable.
 
-The script is supposed to run under later versions of Python 2. It's been developed on a Raspberry Pi running Raspbian Wheezy with Python version 2.7.3. As is, it won't work with Python 3, albeit only minor modifications will be required for that to change.
-The reason for using the Raspberry Pi as the development platform is 
+The script is supposed to run under later versions of Python 2. It's been developed on a Raspberry Pi 2 model B running Raspbian Wheezy and Python 2.7.3. As is, it won't work with Python 3, albeit only minor modifications will be required for that to change. Most of the testing was done with the Apache 2 HTTP server on a Raspberry Pi model B+ running Raspbian Wheezy.
+The reason for using the Raspberry Pi as the development platform is very simple. If it can run on a Raspberry Pi without neither speed nor memeory being an issue, then it should be able to run on just about any COTS desktop machine.
 
 Constraints:
 This is just an exercise and I have chosen to not support files larger than 4 GiB, mostly because of the bandwidth needed to retrieve files for testing.
